@@ -1,0 +1,224 @@
+#pragma once
+#include <stdexcept>
+#include <ostream>
+#include <iterator.h>
+
+template <typename T>
+class Iterator;
+
+template <typename T>
+class TSingleLinkedList;
+
+template <typename T>
+class Node
+{
+public:
+	Node(const T& _value) : value(_value), next(nullptr) {}
+	Node(const T& _value, Node* _next) : value(_value), next(_next) {}
+	Node& operator=(const Node&) = delete;
+private:
+	T value;
+	Node* next;
+	friend class TSingleLinkedList<T>;
+	friend class Iterator<T>;
+};
+
+
+
+template <typename T>
+class TSingleLinkedList
+{
+public:
+
+	private:
+	Node<T>* first;
+	Node<T>* last;
+
+	//void Link(TSingleLinkedList* next) {
+	//	this->next = next;
+	//}
+	public:
+	Iterator<T> begin() const
+	{
+		return Iterator<T>(first);
+	}
+	Iterator<T> end() const
+	{
+		return Iterator<T>(last);
+	}
+
+	TSingleLinkedList() {
+		first = nullptr;
+		last = nullptr;
+	}
+	TSingleLinkedList(const T& element)
+	{
+		first = new Node(element);
+		last = first;
+	}
+	TSingleLinkedList(const TSingleLinkedList& list)
+	{
+		for (Iterator<T> i = list.begin(); i != list.end(); i++)
+		{
+			Add(*i);
+		}
+		Add(*(list.end()));
+	}
+	void Add(const T& value);
+	void Remove(size_t num = 0);
+	bool IsEmpty() const
+	{
+		return !first;
+	}
+	~TSingleLinkedList();
+	T& At(size_t num = 0);
+	T& Last()
+	{
+		return last->value;
+	}
+	const T& Last() const
+	{
+		if (!first) throw std::out_of_range("list is over");
+		return last->value;
+	}
+	const T& At(size_t num = 0) const;
+	friend std::ostream& operator<< (std::ostream& stream, const TSingleLinkedList<T>& list) {
+		stream << list.first->value << '\n';
+		Node<T>* current = list.first;
+		while (current = current->next) {
+			stream << current->value;
+		}
+		return stream;
+	}
+	Iterator<T> Insert(const Iterator<T>& iter, const T& element);
+	void Remove(Iterator<T>& iter);
+};
+
+template<typename T>
+Iterator<T> TSingleLinkedList<T>::Insert(const Iterator<T>& iter, const T& element)
+{
+	if (!iter.node)
+		throw std::out_of_range("null iterator");
+
+	if (IsEmpty())
+	{
+		first = new Node<T>(element);
+		last = first;
+		return Iterator<T>(first);
+	}
+	if (iter.node == last)
+	{
+		Add(element);
+		return Iterator<T>(last);
+	}
+	Node<T>* current = new Node<T>(element, iter.node->next);
+	iter.node->next = current;
+	std::swap(current->value, iter.node->value);
+	return Iterator<T>(current);
+}
+
+template<typename T>
+void TSingleLinkedList<T>::Remove(Iterator<T>& iter)
+{
+	if (iter.node == nullptr)
+		throw std::out_of_range("null iterator");
+	if (IsEmpty())
+		throw std::out_of_range("you can not delete element from empty list");
+	if (first == iter.node)
+	{
+		first = iter.node->next;
+		delete iter.node;
+		iter = Iterator<T> (first);
+		return;
+	}
+	Node<T>* prev = first;
+	Node<T>* current = first->next;
+	while (current && (iter.node != current))
+	{
+		prev = current;
+		current = current->next;
+	}
+	if (iter.node == current){
+		Node<T>* next = current->next;
+		delete current;
+		prev->next = next;
+		return;
+	}
+	throw std::out_of_range("this iterator is incorrect");
+}
+
+template<typename T>
+inline void TSingleLinkedList<T>::Add(const T& value) {
+	if (!first)
+	{
+		first = new Node(value);
+		last = first;
+	}
+	else {
+		last->next = new Node(value);
+		last = last->next;
+	}
+}
+
+template<typename T>
+inline void TSingleLinkedList<T>::Remove(size_t num) {
+	if (!first) throw std::out_of_range("list is over");
+	Node<T>* current = first;
+	Node<T>* prev = nullptr;
+	while (num > 0)
+	{
+		prev = current;
+		if ((current = current->next) == nullptr) throw std::out_of_range("list is over");
+		num--;
+	}
+	Node<T>* next = current->next;
+	if (prev != nullptr) prev->next = next;
+	else
+	{
+		first = next;
+	}
+	delete current;
+	if (!first) last = nullptr;
+}
+
+template<typename T>
+inline TSingleLinkedList<T>::~TSingleLinkedList() {
+	/*
+	if (first == last) {
+		delete first;
+	}
+	else {
+		Node<T>* prev = first;
+		while (Node<T>* current = prev->next)
+		{
+			delete prev;
+			prev = current;
+		}
+		delete prev;
+	}
+	*/
+}
+
+template<typename T>
+inline T& TSingleLinkedList<T>::At(size_t num) {
+	if (!first) throw std::out_of_range("list is over");
+	Node<T>* current = first;
+	while (num > 0)
+	{
+		if ((current = current->next) == nullptr) throw std::out_of_range("list is over");
+		num--;
+	}
+	return current->value;
+}
+
+template<typename T>
+inline const T& TSingleLinkedList<T>::At(size_t num) const {
+	if (!first) throw std::out_of_range("list is over");
+	Node<T>* current = first;
+	while (num > 0)
+	{
+		if ((current = current->next) == nullptr) throw std::out_of_range("list is over");
+		num--;
+	}
+	return current->value;
+}
