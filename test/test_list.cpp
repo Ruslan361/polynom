@@ -92,6 +92,6 @@ TEST(TSingleLinkedList, can_remove_last_element_correct)
     list.Add(7);
     list.Add(8);
     list.Add(9);
-    auto iter = list.end();
+    auto iter = list.tail();
     ASSERT_NO_THROW(list.Remove(iter));
 }

@@ -41,7 +41,8 @@ public:
 	}
 	Iterator& operator++();
 	Iterator operator++(int);
-	T& operator*() const;
+	const T& operator*() const;
+	T& operator*();
 	Iterator operator+(size_t n) const;
 };
 
@@ -69,7 +70,17 @@ Iterator<T> Iterator<T>::operator++(int)
 }
 
 template <typename T>
-T& Iterator<T>::operator*() const
+const T& Iterator<T>::operator*() const
+{
+	if (node == nullptr)
+	{
+		throw std::out_of_range("iterator is out of range");
+	}
+	return node->value;
+}
+
+template <typename T>
+T& Iterator<T>::operator*()
 {
 	if (node == nullptr)
 	{

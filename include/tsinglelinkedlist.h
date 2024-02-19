@@ -15,7 +15,16 @@ class Node
 public:
 	Node(const T& _value) : value(_value), next(nullptr) {}
 	Node(const T& _value, Node* _next) : value(_value), next(_next) {}
-	Node& operator=(const Node&) = delete;
+	Node& operator=(const Node& node)
+	{
+		value = node.value;
+		next = node.next;
+		return *this;
+	}
+	bool operator==(const Node& node) const
+	{
+		return (value == node.value) && (next == node.next);
+	}
 private:
 	T value;
 	Node* next;
@@ -38,15 +47,43 @@ public:
 	//	this->next = next;
 	//}
 	public:
+	TSingleLinkedList& operator=(const TSingleLinkedList& node)
+	{
+		for (Iterator<T> it = begin(); it != end(); ++it)
+		{
+			Add(*it);
+		}
+		return *this;
+	}
+
+	bool operator==(const TSingleLinkedList& list) const
+	{
+		Iterator<T> this_it;
+		Iterator<T> list_it;
+		for (this_it = begin(), list_it = begin(); ((this_it != end()) && (list_it != list.end())); ++this_it, ++list_it)
+		{
+			if (*this_it != *list_it)
+				return false;	
+		}
+		if (this_it != end())
+			return false;
+		if (list_it != list.end())
+			return false;
+		return true;
+	}
+
 	Iterator<T> begin() const
 	{
 		return Iterator<T>(first);
 	}
 	Iterator<T> end() const
 	{
+		return Iterator<T>();
+	}
+	Iterator<T> tail() const
+	{
 		return Iterator<T>(last);
 	}
-
 	TSingleLinkedList() {
 		first = nullptr;
 		last = nullptr;
@@ -58,11 +95,13 @@ public:
 	}
 	TSingleLinkedList(const TSingleLinkedList& list)
 	{
+		first = nullptr;
+		last = nullptr;
 		for (Iterator<T> i = list.begin(); i != list.end(); i++)
 		{
 			Add(*i);
 		}
-		Add(*(list.end()));
+		//Add(*(list.end()));
 	}
 	void Add(const T& value);
 	void Remove(size_t num = 0);
@@ -183,7 +222,6 @@ inline void TSingleLinkedList<T>::Remove(size_t num) {
 
 template<typename T>
 inline TSingleLinkedList<T>::~TSingleLinkedList() {
-	/*
 	if (first == last) {
 		delete first;
 	}
@@ -196,7 +234,6 @@ inline TSingleLinkedList<T>::~TSingleLinkedList() {
 		}
 		delete prev;
 	}
-	*/
 }
 
 template<typename T>

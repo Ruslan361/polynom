@@ -26,13 +26,18 @@ public:
     Monom operator+(const Monom& monom) const;
     Monom operator-(const Monom& monom) const;
     Monom operator*(const Monom& monom) const;
-    Monom& operator=(const Monom& monom){
+    Monom& operator=(const Monom& monom)
+    {
         coeff = monom.coeff;
         degrees = monom.degrees;
     }
     bool operator==(const Monom& monom) const
     {
         return IsEqualDegrees(monom.degrees) && (monom.coeff == coeff);
+    }
+    bool operator!=(const Monom& monom) const
+    {
+        return !(*this == monom);
     }
 };
 
