@@ -15,17 +15,22 @@ public:
         this->degrees = degrees;
     }
     bool IsEqualDegrees(const std::vector<T>& degrees) const;
+    int GetDegree(size_t num)
+    {
+        return degrees[num];
+    }
     bool IsEqualDegrees(const Monom<T>& monom) const
     {
         return IsEqualDegrees(monom.degrees);
     }
-    std::vector<T> GetDegrees() const
+    std::vector<int> GetDegrees() const
     {
         return degrees;
     }
     Monom operator+(const Monom& monom) const;
     Monom operator-(const Monom& monom) const;
     Monom operator*(const Monom& monom) const;
+    Monom operator*(const T& monom) const;
     Monom& operator=(const Monom& monom)
     {
         coeff = monom.coeff;
@@ -71,6 +76,12 @@ Monom<T> Monom<T>::operator*(const Monom<T>& monom) const
         }
     }
     return Monom(coeff * monom.coeff, new_degree);
+}
+
+template<typename T>
+inline Monom<T> Monom<T>::operator*(const T& scalar) const
+{
+    return Monom(coeff * scalar, degrees);
 }
 
 template <typename T>

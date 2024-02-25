@@ -16,6 +16,8 @@ std::vector<std::string> SplitPolynom(const std::string& polynom)
         else if (c == '-')
         {
             //std::cout << current << '\n';
+            if (current == "")
+                throw std::invalid_argument("the expression must not start with + - or have two + or - next to it");
             monoms.push_back(current);
             current = "-";
         }
@@ -83,7 +85,7 @@ Monom<int> MonomFromString(std::string monom, const std::vector<std::string>& na
         std::cout << d << '\n';
     }
     */
-    return Monom<int>(coeff, degrees);
+    return Monom<int>(mul*coeff, degrees);
 }
 
 Polynom<int> PolynomFromString(const std::string& polynom, const std::vector<std::string> names_of_variables)

@@ -150,6 +150,12 @@ Iterator<T> TSingleLinkedList<T>::Insert(const Iterator<T>& iter, const T& eleme
 		Add(element);
 		return Iterator<T>(last);
 	}
+	//if (iter.node == first)
+	//{
+	//	delete first;
+	//	first = nullptr;
+	//	last = nullptr
+	//}
 	Node<T>* current = new Node<T>(element, iter.node->next);
 	iter.node->next = current;
 	std::swap(current->value, iter.node->value);
@@ -168,6 +174,10 @@ void TSingleLinkedList<T>::Remove(Iterator<T>& iter)
 		first = iter.node->next;
 		delete iter.node;
 		iter = Iterator<T> (first);
+		if (!first)
+		{
+			last = nullptr;
+		}
 		return;
 	}
 	Node<T>* prev = first;
@@ -181,6 +191,7 @@ void TSingleLinkedList<T>::Remove(Iterator<T>& iter)
 		Node<T>* next = current->next;
 		delete current;
 		prev->next = next;
+		iter = Iterator<T>(next);
 		return;
 	}
 	throw std::out_of_range("this iterator is incorrect");
@@ -190,11 +201,11 @@ template<typename T>
 inline void TSingleLinkedList<T>::Add(const T& value) {
 	if (!first)
 	{
-		first = new Node(value);
+		first = new Node<T>(value);
 		last = first;
 	}
 	else {
-		last->next = new Node(value);
+		last->next = new Node<T>(value);
 		last = last->next;
 	}
 }
