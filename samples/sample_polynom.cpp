@@ -1,10 +1,16 @@
 #include <iostream>
 #include "polynom.h"
 
-std::vector<std::string> SplitPolynom(const std::string& polynom)
+std::vector<std::string> SplitPolynom(std::string polynom)
 {
     std::vector<std::string> monoms;
-    std::string current;
+    std::string current = "";
+    if (polynom[0] == '-')
+    {
+        current = "-";
+        polynom.erase(0, 1);
+    }
+        
     for (char c : polynom)
     {
         if((c == '+'))
