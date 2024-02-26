@@ -62,7 +62,28 @@ public:
         }
         return stream;
     }
-
+    Polynom operator* (const T& scalar) const
+    {
+        TSingleLinkedList<Monom<T>> new_list_monom;
+        for (Iterator<Monom<T>> it = list_monom.begin(); it != list_monom.end(); it++)
+        {
+            //Monom<T> current = (*it).coeff * scalar;
+            new_list_monom.Add(*it * scalar);
+        }
+        return Polynom<T>(new_list_monom, names_of_variables);
+    }
+    Polynom operator*(const Polynom<T> polynom) const
+    {
+        TSingleLinkedList<Monom<T>> new_list_monom;
+        for (Iterator<Monom<T>> it2 = polynom.list_monom.begin(); it2 != polynom.list_monom.end(); it2++)
+        {
+            for (Iterator<Monom<T>> it = list_monom.begin(); it != list_monom.end(); it++)
+            {
+                new_list_monom.Add(*it * (*it2));
+            }
+        }
+        return Polynom<T>(new_list_monom, names_of_variables);
+    }
     Polynom operator+(const Polynom<T> polynom) const;
     Polynom operator-(const Polynom<T> polynom) const;
     int MaxDegree(size_t num)

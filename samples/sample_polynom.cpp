@@ -136,10 +136,16 @@ int main()
     std::cin >> polynom;
     Polynom<int> p2 = PolynomFromString(polynom, names_of_variables);
 
+    std::cout << "enter scalar" << std::endl;
+    int scalar;
+
     std::cout << "sum" << std::endl;
     std::cout << p1 + p2;
     std::cout << std::endl;
     std::cout << "sub" << std::endl;
     std::cout << p1 - p2;
+    std::cout << std::endl;
+    std::cout << "mul" << std::endl;
+    std::cout << p1 * p2;
     std::cout << std::endl;
 }
