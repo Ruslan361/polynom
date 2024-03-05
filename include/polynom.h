@@ -72,7 +72,7 @@ public:
         }
         return Polynom<T>(new_list_monom, names_of_variables);
     }
-    Polynom operator*(const Polynom<T> polynom) const
+    Polynom operator*(const Polynom<T>& polynom) const
     {
         TSingleLinkedList<Monom<T>> new_list_monom;
         for (Iterator<Monom<T>> it2 = polynom.list_monom.begin(); it2 != polynom.list_monom.end(); it2++)
@@ -81,6 +81,15 @@ public:
             {
                 new_list_monom.Add(*it * (*it2));
             }
+        }
+        return Polynom<T>(new_list_monom, names_of_variables);
+    }
+    Polynom operator*(const Monom<T> monom) const
+    {
+        TSingleLinkedList<Monom<T>> new_list_monom;
+        for (Iterator<Monom<T>> it2 = list_monom.begin(); it2 != list_monom.end(); it2++)
+        {
+                new_list_monom.Add(*it2 * monom);
         }
         return Polynom<T>(new_list_monom, names_of_variables);
     }
@@ -112,32 +121,44 @@ public:
         }
         return min_power;
     }
-    Polynom BringingSimiliar()
+    Polynom& BringingSimiliar()
     {
-        size_t number_of_variables = names_of_variables.size();
-        std::vector<int> max_degrees(number_of_variables);
-        std::vector<int> min_degrees(number_of_variables);
-        std::vector<int> size_degrees(number_of_variables);
-        int length = 0;
-        for (size_t i = 0; i < number_of_variables; i++)
+        for (auto it = list_monom.begin(); it != list_monom.end(); it++)
         {
-            max_degrees[i] = MaxDegree(i);
-            min_degrees[i] = MinDegree(i);
-            size_degrees[i] = max_degrees - min_degrees + 1;
-            length += size_degrees[i];
-        }
-        
-        std::vector<int> current_degrees(length);
-        for (Iterator<Monom<T>> it = list_monom.begin(); it != list_monom.end(); it++)
-        {
-            Monom<T> monom = *it;
-            std::vector<int> degr = monom.GetDegrees();
-            int addres = 0;
-            for (size_t i = 0; i < number_of_variables; i++)
+            for (auto it2 = it + 1; it2 != list_monom.end(); it2++)
             {
-                addres += degr[i] * size_degrees[i];
+                if ((*it).IsEqualDegrees(*it2))
+                {
+                    (*it).coeff += (*it2).coeff;
+                    list_monom.Remove(it2);
+                }
             }
         }
+        return *this;
+        //size_t number_of_variables = names_of_variables.size();
+        //std::vector<int> max_degrees(number_of_variables);
+        //std::vector<int> min_degrees(number_of_variables);
+        //std::vector<int> size_degrees(number_of_variables);
+        //int length = 0;
+        //for (size_t i = 0; i < number_of_variables; i++)
+        //{
+        //    max_degrees[i] = MaxDegree(i);
+        //    min_degrees[i] = MinDegree(i);
+        //    size_degrees[i] = max_degrees - min_degrees + 1;
+        //    length += size_degrees[i];
+        //}
+        //
+        //std::vector<int> current_degrees(length);
+        //for (Iterator<Monom<T>> it = list_monom.begin(); it != list_monom.end(); it++)
+        //{
+        //    Monom<T> monom = *it;
+        //    std::vector<int> degr = monom.GetDegrees();
+        //    int addres = 0;
+        //    for (size_t i = 0; i < number_of_variables; i++)
+        //    {
+        //        addres += degr[i] * size_degrees[i];
+        //    }
+        //}
     }
 };
 

@@ -10,6 +10,21 @@ template <typename T>
 class TSingleLinkedList;
 
 template <typename T>
+class Compare
+{
+	bool (*cmp) (const T& first, const T& second);
+public:
+	Compare(bool (*cmp) (const T& first, const T& second)) 
+	{
+		this->cmp = cmp;
+	}
+	bool operator() (const T& first, const T& second)
+	{
+		return cmp(first);
+	}
+};
+
+template <typename T>
 class Node
 {
 public:
@@ -49,7 +64,11 @@ public:
 	public:
 	TSingleLinkedList& operator=(const TSingleLinkedList& node)
 	{
-		for (Iterator<T> it = begin(); it != end(); ++it)
+		while (begin() != end())
+		{
+			Remove(begin());
+		}
+		for (Iterator<T> it = node.begin(); it != node.end(); ++it)
 		{
 			Add(*it);
 		}
@@ -71,6 +90,7 @@ public:
 			return false;
 		return true;
 	}
+
 
 	Iterator<T> begin() const
 	{
@@ -270,3 +290,105 @@ inline const T& TSingleLinkedList<T>::At(size_t num) const {
 	}
 	return current->value;
 }
+
+
+//////////TSingleLinkedList<T> merge(const TSingleLinkedList<T>& first, const TSingleLinkedList<T>& second, Compare<T> comp)
+//////////{
+//////////	TSingleLinkedList<T> result;
+//////////	auto it_first = first.begin();
+//////////	auto it_second = second.begin();
+//////////	while ((it_first != first.end()) && (it_second != second.end()))
+//////////	{
+//////////		if (comp(*it_first, *it_second))
+//////////		{
+//////////			result.Add(*it_first);
+//////////			it_first++;
+//////////		}
+//////////		else
+//////////		{
+//////////			result.Add(*it_second);
+//////////			it_second++;
+//////////		}
+//////////	}
+//////////	while (it_first != first.end())
+//////////	{
+//////////		result.Add(*it_first);
+//////////		it_first++;
+//////////	}
+//////////	while (it_second != second.end())
+//////////	{
+//////////		result.Add(*it_second);
+//////////		it_second++;
+//////////	}
+//////////	return result;
+//////////}
+//////////TSingleLinkedList<T> merge(const Iterator<T>& first_it_begin, const Iterator<T>& first_it_end, const Iterator<T>& second_it_begin, const Iterator<T>& second_it_end, Compare<T> comp)
+//////////{
+//////////	TSingleLinkedList<T> result;
+//////////	auto it_first = first_it_begin;
+//////////	auto it_second = second_it_begin;
+//////////	while ((it_first != first_it_end) && (it_second != second_it_end))
+//////////	{
+//////////		if (comp(*it_first, *it_second))
+//////////		{
+//////////			result.Add(*it_first);
+//////////			it_first++;
+//////////		}
+//////////		else
+//////////		{
+//////////			result.Add(*it_second);
+//////////			it_second++;
+//////////		}
+//////////	}
+//////////	while (it_first != first_it_end)
+//////////	{
+//////////		result.Add(*it_first);
+//////////		it_first++;
+//////////	}
+//////////	while (it_second != second_it_end)
+//////////	{
+//////////		result.Add(*it_second);
+//////////		it_second++;
+//////////	}
+//////////	return result;
+//////////}
+//////////void merge(const Iterator<T>& middle, Compare<T> comp)
+//////////{
+//////////	auto it1 = begin();
+//////////	Iterator<T> it2 = middle;
+//////////	TSingleLinkedList<T> result;
+//////////	while ((it1 != middle) && (it2 != end()))
+//////////	{
+//////////		if (comp(*it1, *it2))
+//////////		{
+//////////			result.Add(*it1);
+//////////			it1++;
+//////////		}
+//////////		else
+//////////		{
+//////////			result.Add(*it2);
+//////////			it2++;
+//////////		}
+//////////	}
+//////////	while (it1 != middle)
+//////////	{
+//////////		result.Add(*it1);
+//////////		it1++;
+//////////	}
+//////////	while (it2 != end())
+//////////	{
+//////////		result.Add(*it2);
+//////////		it2++;
+//////////	}
+//////////	this* = result;
+//////////}
+//////////void sort(Compare<T> comp)
+//////////{
+//////////	int size = 0;
+//////////	for (auto it = begin(); it != end(); it++)
+//////////	{
+//////////		++size;
+//////////	}
+//////////	int middle = size / 2;
+//////////
+//////////}
