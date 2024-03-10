@@ -57,10 +57,6 @@ public:
 	private:
 	Node<T>* first;
 	Node<T>* last;
-
-	//void Link(TSingleLinkedList* next) {
-	//	this->next = next;
-	//}
 	public:
 	TSingleLinkedList& operator=(const TSingleLinkedList& node)
 	{
@@ -75,21 +71,7 @@ public:
 		return *this;
 	}
 
-	bool operator==(const TSingleLinkedList& list) const
-	{
-		Iterator<T> this_it;
-		Iterator<T> list_it;
-		for (this_it = begin(), list_it = begin(); ((this_it != end()) && (list_it != list.end())); ++this_it, ++list_it)
-		{
-			if (*this_it != *list_it)
-				return false;	
-		}
-		if (this_it != end())
-			return false;
-		if (list_it != list.end())
-			return false;
-		return true;
-	}
+	bool operator==(const TSingleLinkedList& list) const;
 
 
 	Iterator<T> begin() const
@@ -154,6 +136,23 @@ public:
 };
 
 template<typename T>
+bool TSingleLinkedList<T>::operator==(const TSingleLinkedList<T>& list) const
+{
+	Iterator<T> this_it;
+	Iterator<T> list_it;
+	for (this_it = begin(), list_it = list.begin(); ((this_it != end()) && (list_it != list.end())); ++this_it, ++list_it)
+	{
+		if (*this_it != *list_it)
+			return false;
+	}
+	if (this_it != end())
+		return false;
+	if (list_it != list.end())
+		return false;
+	return true;
+}
+
+template<typename T>
 Iterator<T> TSingleLinkedList<T>::Insert(const Iterator<T>& iter, const T& element)
 {
 	if (!iter.node)
@@ -170,12 +169,6 @@ Iterator<T> TSingleLinkedList<T>::Insert(const Iterator<T>& iter, const T& eleme
 		Add(element);
 		return Iterator<T>(last);
 	}
-	//if (iter.node == first)
-	//{
-	//	delete first;
-	//	first = nullptr;
-	//	last = nullptr
-	//}
 	Node<T>* current = new Node<T>(element, iter.node->next);
 	iter.node->next = current;
 	std::swap(current->value, iter.node->value);
@@ -290,105 +283,3 @@ inline const T& TSingleLinkedList<T>::At(size_t num) const {
 	}
 	return current->value;
 }
-
-
-//////////TSingleLinkedList<T> merge(const TSingleLinkedList<T>& first, const TSingleLinkedList<T>& second, Compare<T> comp)
-//////////{
-//////////	TSingleLinkedList<T> result;
-//////////	auto it_first = first.begin();
-//////////	auto it_second = second.begin();
-//////////	while ((it_first != first.end()) && (it_second != second.end()))
-//////////	{
-//////////		if (comp(*it_first, *it_second))
-//////////		{
-//////////			result.Add(*it_first);
-//////////			it_first++;
-//////////		}
-//////////		else
-//////////		{
-//////////			result.Add(*it_second);
-//////////			it_second++;
-//////////		}
-//////////	}
-//////////	while (it_first != first.end())
-//////////	{
-//////////		result.Add(*it_first);
-//////////		it_first++;
-//////////	}
-//////////	while (it_second != second.end())
-//////////	{
-//////////		result.Add(*it_second);
-//////////		it_second++;
-//////////	}
-//////////	return result;
-//////////}
-//////////TSingleLinkedList<T> merge(const Iterator<T>& first_it_begin, const Iterator<T>& first_it_end, const Iterator<T>& second_it_begin, const Iterator<T>& second_it_end, Compare<T> comp)
-//////////{
-//////////	TSingleLinkedList<T> result;
-//////////	auto it_first = first_it_begin;
-//////////	auto it_second = second_it_begin;
-//////////	while ((it_first != first_it_end) && (it_second != second_it_end))
-//////////	{
-//////////		if (comp(*it_first, *it_second))
-//////////		{
-//////////			result.Add(*it_first);
-//////////			it_first++;
-//////////		}
-//////////		else
-//////////		{
-//////////			result.Add(*it_second);
-//////////			it_second++;
-//////////		}
-//////////	}
-//////////	while (it_first != first_it_end)
-//////////	{
-//////////		result.Add(*it_first);
-//////////		it_first++;
-//////////	}
-//////////	while (it_second != second_it_end)
-//////////	{
-//////////		result.Add(*it_second);
-//////////		it_second++;
-//////////	}
-//////////	return result;
-//////////}
-//////////void merge(const Iterator<T>& middle, Compare<T> comp)
-//////////{
-//////////	auto it1 = begin();
-//////////	Iterator<T> it2 = middle;
-//////////	TSingleLinkedList<T> result;
-//////////	while ((it1 != middle) && (it2 != end()))
-//////////	{
-//////////		if (comp(*it1, *it2))
-//////////		{
-//////////			result.Add(*it1);
-//////////			it1++;
-//////////		}
-//////////		else
-//////////		{
-//////////			result.Add(*it2);
-//////////			it2++;
-//////////		}
-//////////	}
-//////////	while (it1 != middle)
-//////////	{
-//////////		result.Add(*it1);
-//////////		it1++;
-//////////	}
-//////////	while (it2 != end())
-//////////	{
-//////////		result.Add(*it2);
-//////////		it2++;
-//////////	}
-//////////	this* = result;
-//////////}
-//////////void sort(Compare<T> comp)
-//////////{
-//////////	int size = 0;
-//////////	for (auto it = begin(); it != end(); it++)
-//////////	{
-//////////		++size;
-//////////	}
-//////////	int middle = size / 2;
-//////////
-//////////}

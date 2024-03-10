@@ -9,7 +9,7 @@ private:
     std::vector<int> degrees;
 public:
     T coeff;
-    Monom(T coef, const std::vector<T>& degrees)
+    Monom(const T& coef, const std::vector<T>& degrees)
     {
         this->coeff = coef;
         this->degrees = degrees;
@@ -27,10 +27,19 @@ public:
     {
         return degrees;
     }
+    friend Monom<T> operator*(const T& scalar, const Monom<T>& monom)
+    {
+        return Monom<T>(monom.coeff * scalar, monom.degrees);
+    }
+    friend Monom<T> operator/(const T& scalar, const Monom<T>& monom)
+    {
+        return Monom<T>(monom.coeff / scalar, monom.degrees);
+    }
     Monom operator+(const Monom& monom) const;
     Monom operator-(const Monom& monom) const;
     Monom operator*(const Monom& monom) const;
     Monom operator*(const T& monom) const;
+    Monom operator/(const T& monom) const;
     Monom& operator=(const Monom& monom)
     {
         coeff = monom.coeff;
@@ -43,6 +52,10 @@ public:
     bool operator!=(const Monom& monom) const
     {
         return !(*this == monom);
+    }
+    int operator[](size_t p)
+    {
+        return degrees[p];
     }
 };
 
@@ -82,6 +95,15 @@ template<typename T>
 inline Monom<T> Monom<T>::operator*(const T& scalar) const
 {
     return Monom(coeff * scalar, degrees);
+}
+
+//template<typename T>
+
+
+template<typename T>
+inline Monom<T >Monom<T>::operator/(const T& scalar) const
+{
+    return Monom(coeff / scalar, degrees);
 }
 
 template <typename T>

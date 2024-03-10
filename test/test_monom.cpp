@@ -66,3 +66,13 @@ TEST(Monom, is_multiple_monoms_correct)
     Monom<int> expected (0, degrees);
     EXPECT_EQ(expected, result);
 }
+
+TEST(Monom, is_multiple_monom_and_scalar_correct)
+{
+    std::vector<int> degrees = { 0, 0, 0 };
+
+    Monom<int> monom2(5, degrees);
+    Monom<int> result = monom2 * 5;
+    Monom<int> expected(25, degrees);
+    EXPECT_EQ(expected, result);
+}

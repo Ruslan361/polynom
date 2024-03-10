@@ -4,6 +4,7 @@
 #include <string>
 #include <algorithm>
 #include <map>
+#include <exception>
 
 
 bool AreNamesEqual(const std::vector<std::string>& names1, const std::vector<std::string>& names2)
@@ -29,6 +30,15 @@ private:
     TSingleLinkedList<Monom<T>> list_monom;
     std::vector<std::string> names_of_variables;
 public:
+    Iterator<Monom<T>> begin() {
+        return list_monom.begin();
+    };
+    Iterator<Monom<T>> end() {
+        return list_monom.end();
+    };
+    Iterator<Monom<T>> tail() {
+        return list_monom.tail();
+    };
     Polynom(const TSingleLinkedList<Monom<T>>& monoms, const std::vector<std::string>& variables) : list_monom(monoms)
     {   
         names_of_variables = variables;
@@ -39,8 +49,8 @@ public:
     {
         return names_of_variables;
     }
-
-
+    int position(const std::string& name);
+    int MonomDegree(const Monom<T>& monom, const std::string& name);
     bool operator==(const Polynom& polynom) const
     {
         return (names_of_variables == polynom.names_of_variables) && (list_monom == polynom.list_monom);
@@ -62,108 +72,72 @@ public:
         }
         return stream;
     }
-    Polynom operator* (const T& scalar) const
+    friend Polynom<T> operator* (const Monom<T>& monom, const Polynom<T>& polynom)
     {
-        TSingleLinkedList<Monom<T>> new_list_monom;
-        for (Iterator<Monom<T>> it = list_monom.begin(); it != list_monom.end(); it++)
-        {
-            //Monom<T> current = (*it).coeff * scalar;
-            new_list_monom.Add(*it * scalar);
-        }
-        return Polynom<T>(new_list_monom, names_of_variables);
+        return polynom * monom;
     }
-    Polynom operator*(const Polynom<T>& polynom) const
+    friend Polynom<T> operator* (const T& scalar, const Polynom<T>& polynom)
     {
-        TSingleLinkedList<Monom<T>> new_list_monom;
-        for (Iterator<Monom<T>> it2 = polynom.list_monom.begin(); it2 != polynom.list_monom.end(); it2++)
-        {
-            for (Iterator<Monom<T>> it = list_monom.begin(); it != list_monom.end(); it++)
-            {
-                new_list_monom.Add(*it * (*it2));
-            }
-        }
-        return Polynom<T>(new_list_monom, names_of_variables);
+        return polynom * scalar;
     }
-    Polynom operator*(const Monom<T> monom) const
+    Polynom<T> operator* (const T& scalar) const;
+    Polynom<T> operator/ (const T& scalar) const;
+    Polynom operator*(const Polynom<T>& polynom) const;
+    Polynom operator*(const Monom<T>& monom) const;
+    Polynom operator+(const Polynom<T>& polynom) const;
+    Polynom operator+(const Monom<T>& monom) const;
+    Polynom operator-(const Monom<T>& monom) const;
+    Polynom operator-(const Polynom<T>& polynom) const;
+
+    int MaxDegree(size_t num);
+    int MinDegree(size_t num);
+    Polynom& BringingSimiliar();
+};
+
+template <typename T>
+int Polynom<T>::MinDegree(size_t num)
+{
+    int min_power = INT_MAX;
+    for (Iterator<Monom<T>> it = list_monom.begin(); it != list_monom.end(); it++)
     {
-        TSingleLinkedList<Monom<T>> new_list_monom;
-        for (Iterator<Monom<T>> it2 = list_monom.begin(); it2 != list_monom.end(); it2++)
-        {
-                new_list_monom.Add(*it2 * monom);
-        }
-        return Polynom<T>(new_list_monom, names_of_variables);
-    }
-    Polynom operator+(const Polynom<T> polynom) const;
-    Polynom operator-(const Polynom<T> polynom) const;
-    int MaxDegree(size_t num)
-    {
-        int max_power = INT_MIN;
-        for (Iterator<Monom<T>> it = list_monom.begin(); it != list_monom.end(); it++)
-        {
-            int degree = (*it).GetDegree(num)
-            if (degree > max_power)
-            {
-                max_power = degree;
-            }
-        }
-        return max_power;
-    }
-    int MinDegree(size_t num)
-    {
-        int min_power = INT_MAX;
-        for (Iterator<Monom<T>> it = list_monom.begin(); it != list_monom.end(); it++)
-        {
-            int degree = (*it).GetDegree(num)
+        int degree = (*it).GetDegree(num)
             if (degree < min_power)
             {
                 min_power = degree;
             }
-        }
-        return min_power;
     }
-    Polynom& BringingSimiliar()
-    {
-        for (auto it = list_monom.begin(); it != list_monom.end(); it++)
-        {
-            for (auto it2 = it + 1; it2 != list_monom.end(); it2++)
-            {
-                if ((*it).IsEqualDegrees(*it2))
-                {
-                    (*it).coeff += (*it2).coeff;
-                    list_monom.Remove(it2);
-                }
-            }
-        }
-        return *this;
-        //size_t number_of_variables = names_of_variables.size();
-        //std::vector<int> max_degrees(number_of_variables);
-        //std::vector<int> min_degrees(number_of_variables);
-        //std::vector<int> size_degrees(number_of_variables);
-        //int length = 0;
-        //for (size_t i = 0; i < number_of_variables; i++)
-        //{
-        //    max_degrees[i] = MaxDegree(i);
-        //    min_degrees[i] = MinDegree(i);
-        //    size_degrees[i] = max_degrees - min_degrees + 1;
-        //    length += size_degrees[i];
-        //}
-        //
-        //std::vector<int> current_degrees(length);
-        //for (Iterator<Monom<T>> it = list_monom.begin(); it != list_monom.end(); it++)
-        //{
-        //    Monom<T> monom = *it;
-        //    std::vector<int> degr = monom.GetDegrees();
-        //    int addres = 0;
-        //    for (size_t i = 0; i < number_of_variables; i++)
-        //    {
-        //        addres += degr[i] * size_degrees[i];
-        //    }
-        //}
-    }
-};
+    return min_power;
+}
 
 template <typename T>
-Polynom<T> Polynom<T>::operator-(const Polynom<T> polynom) const
+int Polynom<T>::MaxDegree(size_t num)
+{
+    int max_power = INT_MIN;
+    for (Iterator<Monom<T>> it = list_monom.begin(); it != list_monom.end(); it++)
+    {
+        int degree = (*it).GetDegree(num)
+            if (degree > max_power)
+            {
+                max_power = degree;
+            }
+    }
+    return max_power;
+}
+
+template <typename T>
+int Polynom<T>::position(const std::string& name)
+{
+    int size = name.size();
+    for (int i = 0; i < size; i++)
+    {
+        if (names_of_variables[i] == name)
+            return i;
+    }
+    return -1;
+}
+
+template <typename T>
+Polynom<T> Polynom<T>::operator-(const Polynom<T>& polynom) const
 {
     if (!AreNamesEqual(names_of_variables, polynom.names_of_variables))
         throw std::invalid_argument("names of variables are different");
@@ -202,7 +176,57 @@ Polynom<T> Polynom<T>::operator-(const Polynom<T> polynom) const
 }
 
 template <typename T>
-Polynom<T> Polynom<T>::operator+(const Polynom<T> polynom) const
+Polynom<T> Polynom<T>::operator* (const T& scalar) const
+{
+    TSingleLinkedList<Monom<T>> new_list_monom;
+    for (Iterator<Monom<T>> it = list_monom.begin(); it != list_monom.end(); it++)
+    {
+        new_list_monom.Add(*it * scalar);
+    }
+    return Polynom<T>(new_list_monom, names_of_variables);
+}
+
+template<typename T>
+inline Polynom<T> Polynom<T>::operator/(const T& scalar) const
+{
+    TSingleLinkedList<Monom<T>> new_list_monom;
+    for (Iterator<Monom<T>> it = list_monom.begin(); it != list_monom.end(); it++)
+    {
+        new_list_monom.Add(*it / scalar);
+    }
+    return Polynom<T>(new_list_monom, names_of_variables);
+}
+
+template <typename T>
+int Polynom<T>::MonomDegree(const Monom<T>& monom, const std::string& name)
+{
+    int pos = position(name);
+    if (pos > -1)
+    {
+        return monom[pos];
+    }
+    throw std::out_of_range("this variable is not in polynom");
+}
+
+template <typename T>
+Polynom<T>& Polynom<T>::BringingSimiliar()
+{
+    for (auto it = list_monom.begin(); it != list_monom.end(); it++)
+    {
+        for (auto it2 = it + 1; it2 != list_monom.end(); it2++)
+        {
+            if ((*it).IsEqualDegrees(*it2))
+            {
+                (*it).coeff += (*it2).coeff;
+                list_monom.Remove(it2);
+          }
+        }
+    }
+    return *this;
+}
+
+template <typename T>
+Polynom<T> Polynom<T>::operator+(const Polynom<T>& polynom) const
 {
     if (!AreNamesEqual(names_of_variables, polynom.names_of_variables))
         throw std::invalid_argument("names of variables are different");
@@ -238,4 +262,43 @@ Polynom<T> Polynom<T>::operator+(const Polynom<T> polynom) const
         new_list_monom.Add(*it2);
     }
     return Polynom(new_list_monom, names_of_variables);
+}
+
+template<typename T>
+inline Polynom<T> Polynom<T>::operator+(const Monom<T>& monom) const
+{
+    Polynom<T> new_pol(*this);
+    new_pol.list_monom.Add(monom);
+}
+
+template<typename T>
+inline Polynom<T> Polynom<T>::operator-(const Monom<T>& monom) const
+{
+    Polynom<T> new_pol(*this);
+    new_pol.list_monom.Add(monom*(-1));
+}
+
+template <typename T>
+Polynom<T> Polynom<T>::operator*(const Monom<T>& monom) const
+{
+    TSingleLinkedList<Monom<T>> new_list_monom;
+    for (Iterator<Monom<T>> it2 = list_monom.begin(); it2 != list_monom.end(); it2++)
+    {
+        new_list_monom.Add(*it2 * monom);
+    }
+    return Polynom<T>(new_list_monom, names_of_variables);
+}
+
+template <typename T>
+Polynom<T> Polynom<T>::operator*(const Polynom<T>& polynom) const
+{
+    TSingleLinkedList<Monom<T>> new_list_monom;
+    for (Iterator<Monom<T>> it2 = polynom.list_monom.begin(); it2 != polynom.list_monom.end(); it2++)
+    {
+        for (Iterator<Monom<T>> it = list_monom.begin(); it != list_monom.end(); it++)
+        {
+            new_list_monom.Add(*it * (*it2));
+        }
+    }
+    return Polynom<T>(new_list_monom, names_of_variables);
 }
